@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Siswa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SiswaController extends Controller
 {
@@ -78,4 +79,13 @@ class SiswaController extends Controller
         return redirect()->route('siswa.index')
             ->with('success', 'Data siswa berhasil dihapus.');
     }
+
+    public function cetakPdf()
+{
+    $siswas = Siswa::all();
+
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('siswa.pdf', compact('siswas'));
+
+    return $pdf->stream('data-siswa.pdf');
+}
 }
