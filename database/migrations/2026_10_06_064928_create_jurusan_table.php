@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('keterangan');
             $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
             $table->timestamps();
+            $table
         });
     }
 

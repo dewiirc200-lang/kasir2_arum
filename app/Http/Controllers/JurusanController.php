@@ -17,7 +17,7 @@ class JurusanController extends Controller
                 $query->where('nama_jurusan', 'like', "%{$search}%")
                       ->orWhere('kode_jurusan', 'like', "%{$search}%");
             })
-            ->paginate(10); 
+            ->paginate(10);
 
         return view('jurusan.index', compact('jurusans'));
     }
@@ -27,7 +27,7 @@ class JurusanController extends Controller
      */
     public function create()
     {
-        //
+        return view('jurusan.create');
     }
 
     /**
@@ -35,38 +35,65 @@ class JurusanController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        // Validasi sekaligus simpan hasilnya ke variabel $data
+        $data = $request->validate([
+            'nama_jurusan' => 'required|string|max:255',
+            'kode_jurusan' => 'required|string|unique:jurusans|max:20',
+            'keterangan'   => 'nullable|string',
+            'status'       => 'required|string|max:20',
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
+        // Simpan data langsung
+        Jurusan::create($data);
+
+        return redirect()->route('jurusan.index')
+            ->with('success', 'Data jurusan berhasil ditambahkan.');
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Jurusan $jurusan)
     {
-        //
+        return view('jurusan.edit', compact('jurusan'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Jurusan $jurusan)
     {
-        //
+        // Validasi data
+        $data = $request->validate([
+            'nama_jurusan' => 'required|string|max:255',
+            'kode_jurusan' => 'required|string|max:20|unique:jurusans,kode_jurusan,' . $jurusan->id,
+            'keterangan'   => 'nullable|string',
+            'status'       => 'required|string|max:20',
+        ]);
+
+        // Update data langsung
+        $jurusan->update($data);
+
+        return redirect()->route('jurusan.index')
+            ->with('success', 'Data jurusan berhasil diperbarui.');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Jurusan $jurusan)
+    {
+        return view('jurusan.show', compact('jurusan'));
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Jurusan $jurusan)
     {
-        //
+        $jurusan->delete();
+
+        return redirect()->route('jurusan.index')
+            ->with('success', 'Data jurusan berhasil dihapus.');
     }
 }
